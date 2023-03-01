@@ -10,4 +10,7 @@ routerMatches.get('/', (req: Request, res: Response) => matchesControler.getMatc
 routerMatches.patch('/:id/finish', validationToken, (req: Request, res: Response) =>
   matchesControler.getMatchFinished(req, res));
 
+routerMatches.patch('/:id', validationToken, (req: Request, res: Response) =>
+  matchesControler.updateMatch(req, res));
+
 export default routerMatches;
