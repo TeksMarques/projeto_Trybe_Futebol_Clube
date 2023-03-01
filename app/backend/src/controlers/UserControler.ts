@@ -15,6 +15,14 @@ class UserController {
     if (!token) res.status(401).json({ message: 'Invalid email or password' });
     res.status(200).json(token);
   }
+
+  async role(_req: Request, res: Response) {
+    const { email } = res.locals.token;
+    const result = await this.userService.role(email);
+
+    if (!result) res.status(401).json({ message: 'Invalid email or password' });
+    res.status(200).json({ role: result });
+  }
 }
 
 export default UserController;
