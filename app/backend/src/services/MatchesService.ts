@@ -17,6 +17,11 @@ class MatchesService {
     if (inProgress === 'false') return matches.filter((match) => match.inProgress === false);
     return matches;
   }
+
+  async getMatchFinished(id: number): Promise<void> {
+    await this.model.findByPk(id);
+    await this.model.update({ inProgress: false }, { where: { id } });
+  }
 }
 
 export default MatchesService;
