@@ -5,7 +5,7 @@ import MatchesModel from '../database/models/MatchesModel';
 class MatchesService {
   model: ModelStatic<MatchesModel> = MatchesModel;
 
-  async getMatches(): Promise<MatchesModel[]> {
+  async getMatches(inProgress: unknown): Promise<MatchesModel[]> {
     const matches = await this.model.findAll(
       { include: [
         { model: TeamModel, as: 'homeTeam', attributes: ['teamName'] },
@@ -13,6 +13,8 @@ class MatchesService {
       ],
       },
     );
+    if (inProgress === 'true') return matches.filter((match) => match.inProgress === true);
+    if (inProgress === 'false') return matches.filter((match) => match.inProgress === false);
     return matches;
   }
 }
