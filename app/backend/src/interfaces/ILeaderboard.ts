@@ -7,4 +7,6 @@ export default interface IleaderboardHome{
   totalLosses: number,
   goalsFavor: number,
   goalsOwn: number,
+  goalsBalance: number,
+  efficiency: number,
 }

@@ -1,6 +1,7 @@
 import IMatch from '../interfaces/IMatch';
+import ILeaderboard from '../interfaces/ILeaderboard';
 
-const TeamStats = {
+const SportsTeamStats = {
   name: '',
   totalPoints: 0,
   totalGames: 0,
@@ -9,96 +10,134 @@ const TeamStats = {
   totalLosses: 0,
   goalsFavor: 0,
   goalsOwn: 0,
+  goalsBalance: 0,
+  efficiency: 0,
 };
 
-const reset = () => {
-  TeamStats.totalPoints = 0;
-  TeamStats.totalGames = 0;
-  TeamStats.totalVictories = 0;
-  TeamStats.totalDraws = 0;
-  TeamStats.totalLosses = 0;
-  TeamStats.goalsFavor = 0;
-  TeamStats.goalsOwn = 0;
+const restart = () => {
+  SportsTeamStats.totalPoints = 0;
+  SportsTeamStats.totalGames = 0;
+  SportsTeamStats.totalVictories = 0;
+  SportsTeamStats.totalDraws = 0;
+  SportsTeamStats.totalLosses = 0;
+  SportsTeamStats.goalsFavor = 0;
+  SportsTeamStats.goalsOwn = 0;
+  SportsTeamStats.goalsBalance = 0;
+  SportsTeamStats.efficiency = 0;
 };
 
-const victoryHome = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 3;
-  TeamStats.totalVictories += 1;
-  TeamStats.goalsFavor += homeTeamGoals;
-  TeamStats.goalsOwn += awayTeamGoals;
+const homeWin = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 3;
+  SportsTeamStats.totalVictories += 1;
+  SportsTeamStats.goalsFavor += homeTeamGoals;
+  SportsTeamStats.goalsOwn += awayTeamGoals;
 };
 
-const victoryAway = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 3;
-  TeamStats.totalVictories += 1;
-  TeamStats.goalsFavor += awayTeamGoals;
-  TeamStats.goalsOwn += homeTeamGoals;
+const homeTie = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 1;
+  SportsTeamStats.totalDraws += 1;
+  SportsTeamStats.goalsFavor += homeTeamGoals;
+  SportsTeamStats.goalsOwn += awayTeamGoals;
+};
+const homeLose = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 0;
+  SportsTeamStats.totalLosses += 1;
+  SportsTeamStats.goalsFavor += homeTeamGoals;
+  SportsTeamStats.goalsOwn += awayTeamGoals;
+};
+const awayWin = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 3;
+  SportsTeamStats.totalVictories += 1;
+  SportsTeamStats.goalsFavor += awayTeamGoals;
+  SportsTeamStats.goalsOwn += homeTeamGoals;
 };
 
-const drawHome = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 1;
-  TeamStats.totalDraws += 1;
-  TeamStats.goalsFavor += homeTeamGoals;
-  TeamStats.goalsOwn += awayTeamGoals;
+const awayTie = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 1;
+  SportsTeamStats.totalDraws += 1;
+  SportsTeamStats.goalsFavor += awayTeamGoals;
+  SportsTeamStats.goalsOwn += homeTeamGoals;
 };
 
-const drawAway = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 1;
-  TeamStats.totalDraws += 1;
-  TeamStats.goalsFavor += awayTeamGoals;
-  TeamStats.goalsOwn += homeTeamGoals;
+const awayLose = (homeTeamGoals: number, awayTeamGoals: number) => {
+  SportsTeamStats.totalPoints += 0;
+  SportsTeamStats.totalLosses += 1;
+  SportsTeamStats.goalsFavor += awayTeamGoals;
+  SportsTeamStats.goalsOwn += homeTeamGoals;
 };
 
-const defeatHome = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 0;
-  TeamStats.totalLosses += 1;
-  TeamStats.goalsFavor += homeTeamGoals;
-  TeamStats.goalsOwn += awayTeamGoals;
-};
-
-const defeatAway = (homeTeamGoals:number, awayTeamGoals:number) => {
-  TeamStats.totalPoints += 0;
-  TeamStats.totalLosses += 1;
-  TeamStats.goalsFavor += awayTeamGoals;
-  TeamStats.goalsOwn += homeTeamGoals;
-};
-
-const calculatePointsHome = ((matches: IMatch[]) => {
+const calculateHomeTeamPoints = (matches: IMatch[]) => {
   matches.forEach(({ homeTeamGoals, awayTeamGoals }) => {
-    if (homeTeamGoals > awayTeamGoals) victoryHome(homeTeamGoals, awayTeamGoals);
-    if (homeTeamGoals === awayTeamGoals) drawHome(homeTeamGoals, awayTeamGoals);
-    if (homeTeamGoals < awayTeamGoals) defeatHome(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals > awayTeamGoals) homeWin(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals === awayTeamGoals) homeTie(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals < awayTeamGoals) homeLose(homeTeamGoals, awayTeamGoals);
   });
-});
+};
 
-const calculatePointsAway = ((matches:IMatch[]) => {
+const HomeTeamStats = (name: string, matches: IMatch[]) => {
+  if (name !== SportsTeamStats.name) {
+    restart();
+  }
+  SportsTeamStats.name = name;
+  calculateHomeTeamPoints(matches);
+  SportsTeamStats.totalGames += 1;
+  SportsTeamStats.goalsBalance = SportsTeamStats.goalsFavor - SportsTeamStats.goalsOwn;
+  SportsTeamStats.efficiency = Number(
+    (
+      (SportsTeamStats.totalPoints / (SportsTeamStats.totalGames * 3))
+      * 100
+    ).toFixed(2),
+  );
+
+  return SportsTeamStats;
+};
+
+const calculateAwayTeamPoints = (matches: IMatch[]) => {
   matches.forEach(({ homeTeamGoals, awayTeamGoals }) => {
-    if (homeTeamGoals > awayTeamGoals) victoryAway(homeTeamGoals, awayTeamGoals);
-    if (homeTeamGoals === awayTeamGoals) drawAway(homeTeamGoals, awayTeamGoals);
-    if (homeTeamGoals < awayTeamGoals) defeatAway(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals > awayTeamGoals) awayWin(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals === awayTeamGoals) awayTie(homeTeamGoals, awayTeamGoals);
+    if (homeTeamGoals < awayTeamGoals) awayLose(homeTeamGoals, awayTeamGoals);
   });
-});
-
-const StatisticTeamHome = (name:string, matches:IMatch[]) => {
-  if (name !== TeamStats.name) {
-    reset();
-  }
-  TeamStats.name = name;
-  calculatePointsHome(matches);
-  TeamStats.totalGames += 1;
-
-  return TeamStats;
 };
 
-const StatisticTeamAway = (name:string, matches:IMatch[]) => {
-  if (name !== TeamStats.name) {
-    reset();
+const AwayTeamStats = (name: string, matches: IMatch[]) => {
+  if (name !== SportsTeamStats.name) {
+    restart();
   }
-  TeamStats.name = name;
-  calculatePointsAway(matches);
-  TeamStats.totalGames += 1;
+  SportsTeamStats.name = name;
+  calculateAwayTeamPoints(matches);
+  SportsTeamStats.totalGames += 1;
 
-  return TeamStats;
+  return SportsTeamStats;
 };
 
-export { StatisticTeamHome, StatisticTeamAway };
+function sortByPoints(a: ILeaderboard, b: ILeaderboard): number {
+  return b.totalPoints - a.totalPoints;
+}
+
+function sortByVictories(a: ILeaderboard, b: ILeaderboard): number {
+  return b.totalVictories - a.totalVictories;
+}
+
+function sortByGoalsBalance(a: ILeaderboard, b: ILeaderboard): number {
+  return b.goalsBalance - a.goalsBalance;
+}
+
+function sortByGoalsFavor(a: ILeaderboard, b: ILeaderboard): number {
+  return b.goalsFavor - a.goalsFavor;
+}
+
+function sortByGoalsOwn(a: ILeaderboard, b: ILeaderboard): number {
+  return b.goalsOwn - a.goalsOwn;
+}
+
+function sortTeams(matches: ILeaderboard[]): ILeaderboard[] {
+  return matches.sort((a, b) =>
+    sortByPoints(a, b)
+    || sortByVictories(a, b)
+    || sortByGoalsBalance(a, b)
+    || sortByGoalsFavor(a, b)
+    || sortByGoalsOwn(a, b));
+}
+
+export { HomeTeamStats, AwayTeamStats, sortTeams };
