@@ -31,7 +31,7 @@ class MatchesController {
       homeTeamGoals,
       awayTeamGoals,
     );
-    res.status(200).json(match);
+    res.status(201).json(match);
   }
 }
 
