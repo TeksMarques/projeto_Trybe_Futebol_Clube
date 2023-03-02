@@ -22,6 +22,17 @@ class MatchesController {
     await this.matchesService.updateMatch(Number(id), homeTeamGoals, awayTeamGoals);
     res.status(200).json({ message: 'Placar atualizado' });
   }
+
+  public async newMatch(req: Request, res: Response): Promise<Response | void> {
+    const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+    const match = await this.matchesService.newMatch(
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+    );
+    res.status(200).json(match);
+  }
 }
 
 export default MatchesController;

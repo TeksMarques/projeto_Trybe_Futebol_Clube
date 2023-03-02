@@ -30,6 +30,17 @@ class MatchesService {
       { where: { id } },
     );
   }
+
+  async newMatch(homeTeamId: number, awayTeamId: number, homeTeamGoals: Date, awayTeamGoals: string)
+    : Promise<MatchesModel> {
+    return this.model.create({
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+      inProgress: true,
+    });
+  }
 }
 
 export default MatchesService;
